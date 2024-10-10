@@ -1,16 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './src/components/Navbar';
-import HomePage from './src/pages/HomePage';
-import ProductPage from './src/pages/ProductPage';
-import AdminDashboard from './src/pages/AdminDashboard';
-import CartPage from './src/pages/CartPage';
-import LoginPage from './src/pages/LoginPage';
-import RegisterPage from './src/pages/RegisterPage';
-import CheckoutPage from './src/pages/CheckoutPage';
-import OrderHistoryPage from './src/pages/OrderHistoryPage';
-import InventoryPage from './src/pages/InventoryPage';
-import Footer from './src/components/Footer';
+import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage';
+import ProductPage from './pages/ProductPage';
+import AdminDashboard from './pages/AdminDashboard';
+import CartPage from './pages/CartPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderHistoryPage from './pages/OrderHistoryPage';
+import InventoryPage from './pages/InventoryPage';
+import Footer from './components/Footer';
 
 const App = () => {
   return (
