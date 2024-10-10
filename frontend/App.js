@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Navbar from './components/Navbar';
-import HomePage from './pages/HomePage';
-import ProductPage from './pages/ProductPage';
-import AdminDashboard from './pages/AdminDashboard';
-import CartPage from './pages/CartPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import CheckoutPage from './pages/CheckoutPage';
-import OrderHistoryPage from './pages/OrderHistoryPage';
-import InventoryPage from './pages/InventoryPage';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const ProductPage = lazy(() => import('./pages/ProductPage'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const CartPage = lazy(() => import('./pages/CartPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const OrderHistoryPage = lazy(() => import('./pages/OrderHistoryPage'));
+const InventoryPage = lazy(() => import('./pages/InventoryPage'));
 
 const App = () => {
   return (
@@ -25,17 +26,19 @@ const App = () => {
         </Helmet>
         <Navbar />
         <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/productos/:id" element={<ProductPage />} />
-            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/carrito" element={<CartPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/historial-pedidos" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
-            <Route path="/inventario" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
-          </Routes>
+          <Suspense fallback={<div>Cargando...</div>}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/productos/:id" element={<ProductPage />} />
+              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/carrito" element={<CartPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/historial-pedidos" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
+              <Route path="/inventario" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
+            </Routes>
+          </Suspense>
         </main>
         <Footer />
       </div>
