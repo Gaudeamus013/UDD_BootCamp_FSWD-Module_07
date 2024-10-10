@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
@@ -17,6 +18,11 @@ const App = () => {
   return (
     <Router>
       <div className="flex flex-col min-h-screen">
+        <Helmet>
+          <title>Cruz & Valencia - Perfumería de Niche</title>
+          <meta name="description" content="Descubre los mejores perfumes de nicho en Cruz & Valencia, con envíos a todo Chile y al extranjero." />
+          <meta name="keywords" content="perfumería, perfumes de nicho, perfumes exclusivos, Cruz & Valencia" />
+        </Helmet>
         <Navbar />
         <main className="flex-grow">
           <Routes>
