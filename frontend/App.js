@@ -11,6 +11,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import InventoryPage from './pages/InventoryPage';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
@@ -21,13 +22,13 @@ const App = () => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/productos/:id" element={<ProductPage />} />
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/carrito" element={<CartPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/historial-pedidos" element={<OrderHistoryPage />} />
-            <Route path="/inventario" element={<InventoryPage />} />
+            <Route path="/historial-pedidos" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
+            <Route path="/inventario" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
           </Routes>
         </main>
         <Footer />
