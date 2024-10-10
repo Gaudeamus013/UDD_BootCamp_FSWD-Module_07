@@ -1,0 +1,23 @@
+{
+    "navbar": {
+      "home": "Inicio",
+      "products": "Productos",
+      "cart": "Carrito",
+      "login": "Iniciar Sesión"
+    },
+    "footer": {
+      "copyright": "© 2024 Cruz & Valencia. Todos los derechos reservados."
+    },
+    "product": {
+      "details": "Ver Detalles",
+      "suggestions": "Productos Sugeridos"
+    },
+    "review": {
+      "leave_review": "Dejar una Reseña",
+      "rating": "Calificación",
+      "comment_placeholder": "Escribe tu comentario aquí...",
+      "submit": "Enviar Reseña",
+      "success": "Reseña enviada correctamente",
+      "error": "Error al enviar la reseña"
+    }
+  }
