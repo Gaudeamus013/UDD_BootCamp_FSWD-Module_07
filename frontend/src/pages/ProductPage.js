@@ -3,25 +3,30 @@ import { useParams } from 'react-router-dom';
 import { useCart } from '../hooks/useContextHooks';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
-import ProductReview from '../components/ProductReview';
-import ProductSuggestions from '../components/ProductSuggestions';
 import Spinner from '../components/Spinner';
+
+const ProductReview = React.lazy(() => import('../components/ProductReview'));
+const ProductSuggestions = React.lazy(() => import('../components/ProductSuggestions'));
 
 const ProductPage = () => {
   const { id } = useParams();
   const { cartDispatch } = useCart();
   const [producto, setProducto] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchProducto = async () => {
+    try {
+      const response = await axios.get(`/api/productos/${id}`);
+      setProducto(response.data);
+      setLoading(false);
+    } catch (error) {
+      setError('Hubo un problema al cargar el producto. Por favor, intenta nuevamente.');
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducto = async () => {
-      try {
-        const response = await axios.get(`/api/productos/${id}`);
-        setProducto(response.data);
-      } catch (error) {
-        console.error('Error al obtener el producto:', error);
-      }
-    };
-
     fetchProducto();
   }, [id]);
 
@@ -29,12 +34,16 @@ const ProductPage = () => {
     cartDispatch({ type: 'ADD_TO_CART', payload: { id: producto.id, nombre: producto.nombre, precio: producto.precio, quantity: 1 } });
   };
 
-  if (!producto) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
       </div>
     );
+  }
+
+  if (error) {
+    return <div className="text-red-500 text-center">{error}</div>;
   }
 
   return (
