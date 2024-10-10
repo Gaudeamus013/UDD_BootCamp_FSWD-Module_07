@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import { useAuth, useCart } from './hooks/useContextHooks';
 
 // Definición de Contextos
 const AuthContext = createContext();

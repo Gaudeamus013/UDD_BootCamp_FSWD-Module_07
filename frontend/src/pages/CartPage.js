@@ -1,57 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useCart } from '../hooks/useContextHooks';
 import { Link } from 'react-router-dom';
 
 const CartPage = () => {
-  const [carrito, setCarrito] = useState([]);
-  const [mensaje, setMensaje] = useState('');
+  const { cartState, cartDispatch } = useCart();
 
   useEffect(() => {
-    const obtenerCarrito = async () => {
+    // Ejemplo de lógica para cargar el carrito desde el backend si es necesario
+    const cargarCarrito = async () => {
       try {
-        const response = await axios.get('/api/carrito');
-        setCarrito(response.data);
+        // Aquí iría la llamada al backend para obtener los productos del carrito
+        const carritoDesdeBackend = []; // Suponiendo que obtuviste los productos del backend
+        carritoDesdeBackend.forEach(item => {
+          cartDispatch({ type: 'ADD_TO_CART', payload: item });
+        });
       } catch (error) {
-        console.error('Error al obtener el carrito:', error);
+        console.error('Error al cargar el carrito:', error);
       }
     };
 
-    obtenerCarrito();
-  }, []);
+    cargarCarrito();
+  }, [cartDispatch]);
 
-  const actualizarCantidad = async (productoId, cantidad) => {
-    try {
-      await axios.put(`/api/carrito/${productoId}`, { cantidad });
-      setMensaje('Cantidad actualizada correctamente');
-      const response = await axios.get('/api/carrito');
-      setCarrito(response.data);
-    } catch (error) {
-      console.error('Error al actualizar la cantidad:', error);
-      setMensaje('Error al actualizar la cantidad');
-    }
+  const actualizarCantidad = (productoId, cantidad) => {
+    cartDispatch({ type: 'UPDATE_CART_ITEM', payload: { id: productoId, quantity: cantidad } });
   };
 
-  const eliminarProducto = async (productoId) => {
-    try {
-      await axios.delete(`/api/carrito/${productoId}`);
-      setMensaje('Producto eliminado del carrito');
-      const response = await axios.get('/api/carrito');
-      setCarrito(response.data);
-    } catch (error) {
-      console.error('Error al eliminar el producto:', error);
-      setMensaje('Error al eliminar el producto');
-    }
+  const eliminarProducto = (productoId) => {
+    cartDispatch({ type: 'REMOVE_FROM_CART', payload: productoId });
   };
 
   const calcularTotal = () => {
-    return carrito.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
+    return cartState.items.reduce((total, producto) => total + producto.precio * producto.quantity, 0);
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Carrito de Compras</h1>
-      {mensaje && <p className="mb-4 text-green-500">{mensaje}</p>}
-      {carrito.length === 0 ? (
+      {cartState.items.length === 0 ? (
         <p>El carrito está vacío.</p>
       ) : (
         <div>
@@ -66,23 +52,23 @@ const CartPage = () => {
               </tr>
             </thead>
             <tbody>
-              {carrito.map((producto) => (
-                <tr key={producto._id}>
+              {cartState.items.map((producto) => (
+                <tr key={producto.id}>
                   <td className="py-2 px-4 border-b">{producto.nombre}</td>
                   <td className="py-2 px-4 border-b">${producto.precio}</td>
                   <td className="py-2 px-4 border-b">
                     <input
                       type="number"
-                      value={producto.cantidad}
-                      onChange={(e) => actualizarCantidad(producto._id, e.target.value)}
+                      value={producto.quantity}
+                      onChange={(e) => actualizarCantidad(producto.id, parseInt(e.target.value, 10))}
                       className="w-16 p-1 border rounded"
                       min="1"
                     />
                   </td>
-                  <td className="py-2 px-4 border-b">${producto.precio * producto.cantidad}</td>
+                  <td className="py-2 px-4 border-b">${producto.precio * producto.quantity}</td>
                   <td className="py-2 px-4 border-b">
                     <button
-                      onClick={() => eliminarProducto(producto._id)}
+                      onClick={() => eliminarProducto(producto.id)}
                       className="bg-red-500 text-white px-4 py-2 rounded"
                     >
                       Eliminar
