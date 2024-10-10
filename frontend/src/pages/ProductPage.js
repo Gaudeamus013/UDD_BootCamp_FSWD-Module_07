@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../hooks/useContextHooks';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import ProductReview from '../components/ProductReview';
 import ProductSuggestions from '../components/ProductSuggestions';
+import Spinner from '../components/Spinner';
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -29,7 +30,11 @@ const ProductPage = () => {
   };
 
   if (!producto) {
-    return <p>Cargando...</p>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
   }
 
   return (
@@ -46,8 +51,10 @@ const ProductPage = () => {
       <button onClick={agregarAlCarrito} className="bg-blue-500 text-white px-4 py-2 rounded mb-4">
         Agregar al Carrito
       </button>
-      <ProductReview productId={id} />
-      <ProductSuggestions currentProductId={id} />
+      <Suspense fallback={<div className="flex justify-center items-center"><Spinner /></div>}>
+        <ProductReview productId={id} />
+        <ProductSuggestions currentProductId={id} />
+      </Suspense>
     </div>
   );
 };
