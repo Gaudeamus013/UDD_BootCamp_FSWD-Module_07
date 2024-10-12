@@ -14,18 +14,19 @@ const ProductPage = () => {
   const [producto, setProducto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
 
   const fetchProducto = async () => {
     try {
       const response = await axios.get(`/api/productos/${id}`);
-      if (response.status === 200) {
+      if (response.status === 200 && response.data) {
         setProducto(response.data);
       } else {
-        throw new Error('Producto no encontrado');
+        setNotFound(true);
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        setError('El producto solicitado no fue encontrado.');
+        setNotFound(true);
       } else {
         setError('Hubo un problema al cargar el producto. Por favor, intenta nuevamente.');
       }
@@ -39,7 +40,9 @@ const ProductPage = () => {
   }, [id]);
 
   const agregarAlCarrito = () => {
-    cartDispatch({ type: 'ADD_TO_CART', payload: { id: producto.id, nombre: producto.nombre, precio: producto.precio, quantity: 1 } });
+    if (producto) {
+      cartDispatch({ type: 'ADD_TO_CART', payload: { id: producto.id, nombre: producto.nombre, precio: producto.precio, quantity: 1 } });
+    }
   };
 
   if (loading) {
@@ -50,8 +53,16 @@ const ProductPage = () => {
     );
   }
 
+  if (notFound) {
+    return <div className="text-red-500 text-center p-4">El producto solicitado no fue encontrado.</div>;
+  }
+
   if (error) {
     return <div className="text-red-500 text-center p-4">{error}</div>;
+  }
+
+  if (!producto) {
+    return <div className="text-red-500 text-center p-4">Error inesperado: No se pudo cargar la información del producto.</div>;
   }
 
   return (
@@ -62,9 +73,9 @@ const ProductPage = () => {
         <meta name="keywords" content={`perfume, ${producto.nombre}, Cruz & Valencia, perfumes exclusivos`} />
       </Helmet>
       <h1 className="text-3xl font-bold mb-4">{producto.nombre}</h1>
-      <img src={producto.imagen} alt={producto.nombre} className="w-full h-96 object-cover mb-4" />
+      <img src={producto.imagen || '/ruta_a_imagen_predeterminada.jpg'} alt={producto.nombre} className="w-full h-96 object-cover mb-4" />
       <p className="text-xl mb-4">Precio: ${producto.precio}</p>
-      <p className="mb-4">{producto.descripcion}</p>
+      <p className="mb-4">{producto.descripcion || 'Descripción no disponible.'}</p>
       <button onClick={agregarAlCarrito} className="bg-blue-500 text-white px-4 py-2 rounded mb-4">
         Agregar al Carrito
       </button>
