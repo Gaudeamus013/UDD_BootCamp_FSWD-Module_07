@@ -18,10 +18,18 @@ const ProductPage = () => {
   const fetchProducto = async () => {
     try {
       const response = await axios.get(`/api/productos/${id}`);
-      setProducto(response.data);
-      setLoading(false);
+      if (response.status === 200) {
+        setProducto(response.data);
+      } else {
+        throw new Error('Producto no encontrado');
+      }
     } catch (error) {
-      setError('Hubo un problema al cargar el producto. Por favor, intenta nuevamente.');
+      if (error.response && error.response.status === 404) {
+        setError('El producto solicitado no fue encontrado.');
+      } else {
+        setError('Hubo un problema al cargar el producto. Por favor, intenta nuevamente.');
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -43,7 +51,7 @@ const ProductPage = () => {
   }
 
   if (error) {
-    return <div className="text-red-500 text-center">{error}</div>;
+    return <div className="text-red-500 text-center p-4">{error}</div>;
   }
 
   return (
