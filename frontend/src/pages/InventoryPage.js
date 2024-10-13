@@ -1,76 +1,77 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useCallback } from 'react';
+import axiosInstance from '../utils/axiosInterceptors';
 
-const InventoryPage = () => {
+const InventoryPage = React.memo(() => {
   const [productos, setProductos] = useState([]);
-  const [mensaje, setMensaje] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const obtenerProductos = async () => {
-      try {
-        const response = await axios.get('/api/productos');
-        setProductos(response.data);
-      } catch (error) {
-        console.error('Error al obtener productos:', error);
-      }
-    };
-
-    obtenerProductos();
-  }, []);
-
-  const actualizarStock = async (productoId, nuevoStock) => {
+  const obtenerProductos = useCallback(async () => {
     try {
-      await axios.put(`/api/productos/${productoId}`, { stock: nuevoStock });
-      setMensaje('Stock actualizado correctamente');
-      const response = await axios.get('/api/productos');
+      setIsLoading(true);
+      const response = await axiosInstance.get('/api/productos');
       setProductos(response.data);
     } catch (error) {
-      console.error('Error al actualizar el stock:', error);
-      setMensaje('Error al actualizar el stock');
+      console.error('Error al obtener los productos:', error);
+      setError('Error al obtener los productos. Intenta nuevamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    obtenerProductos();
+  }, [obtenerProductos]);
+
+  const actualizarProducto = async (id, actualizado) => {
+    try {
+      const response = await axiosInstance.put(`/api/productos/${id}`, actualizado);
+      setProductos((prevProductos) =>
+        prevProductos.map((producto) =>
+          producto._id === id ? { ...producto, ...response.data } : producto
+        )
+      );
+    } catch (error) {
+      console.error('Error al actualizar el producto:', error);
     }
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Gestión de Inventario</h1>
-      {mensaje && <p className="mb-4 text-green-500">{mensaje}</p>}
-      <table className="min-w-full bg-white">
-        <thead>
-          <tr>
-            <th className="py-2">Producto</th>
-            <th className="py-2">Precio</th>
-            <th className="py-2">Stock</th>
-            <th className="py-2">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
+      {isLoading ? (
+        <p>Cargando productos...</p>
+      ) : error ? (
+        <p className="mb-4 text-red-500">{error}</p>
+      ) : productos.length === 0 ? (
+        <p>No hay productos disponibles.</p>
+      ) : (
+        <ul>
           {productos.map((producto) => (
-            <tr key={producto._id}>
-              <td className="py-2 px-4 border-b">{producto.nombre}</td>
-              <td className="py-2 px-4 border-b">${producto.precio}</td>
-              <td className="py-2 px-4 border-b">
+            <li key={producto._id} className="mb-4">
+              <div className="p-4 border rounded">
+                <h2 className="text-xl font-bold">{producto.nombre}</h2>
+                <p>Precio: ${producto.precio}</p>
+                <input
+                  type="number"
+                  value={producto.precio}
+                  onChange={(e) => actualizarProducto(producto._id, { precio: e.target.value })}
+                  className="w-20 p-1 border rounded mb-2"
+                />
+                <p>Stock: {producto.stock}</p>
                 <input
                   type="number"
                   value={producto.stock}
-                  onChange={(e) => actualizarStock(producto._id, e.target.value)}
-                  className="w-16 p-1 border rounded"
-                  min="0"
+                  onChange={(e) => actualizarProducto(producto._id, { stock: e.target.value })}
+                  className="w-20 p-1 border rounded mb-2"
                 />
-              </td>
-              <td className="py-2 px-4 border-b">
-                <button
-                  onClick={() => actualizarStock(producto._id, producto.stock)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  Actualizar Stock
-                </button>
-              </td>
-            </tr>
+              </div>
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+      )}
     </div>
   );
-};
+});
 
 export default InventoryPage;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../hooks/useContextHooks';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInterceptors';
 import { Helmet } from 'react-helmet';
 import Spinner from '../components/Spinner';
 
@@ -18,7 +18,7 @@ const ProductPage = () => {
 
   const fetchProducto = async () => {
     try {
-      const response = await axios.get(`/api/productos/${id}`);
+      const response = await axiosInstance.get(`/api/productos/${id}`);
       if (response.status === 200 && response.data) {
         setProducto(response.data);
       } else {

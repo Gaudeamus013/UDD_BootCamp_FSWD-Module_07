@@ -1,71 +1,57 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../utils/axiosInterceptors';
+import { useNavigate } from 'react-router-dom';
 
 const CheckoutPage = () => {
-  const [nombre, setNombre] = useState('');
-  const [direccion, setDireccion] = useState('');
-  const [metodoPago, setMetodoPago] = useState('');
+  const [carrito, setCarrito] = useState([]);
   const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
-  const manejarCheckout = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const obtenerCarrito = async () => {
+      try {
+        const response = await axiosInstance.get('/api/carrito');
+        setCarrito(response.data);
+      } catch (error) {
+        console.error('Error al obtener el carrito:', error);
+      }
+    };
+
+    obtenerCarrito();
+  }, []);
+
+  const procesarPedido = async () => {
     try {
-      await axios.post('/api/pedidos', {
-        nombre,
-        direccion,
-        metodoPago,
-      });
-      setMensaje('Pedido realizado correctamente');
+      await axiosInstance.post('/api/pedidos', { productos: carrito });
+      setMensaje('Pedido procesado exitosamente');
+      navigate('/historial-pedidos');
     } catch (error) {
-      console.error('Error al realizar el pedido:', error);
-      setMensaje('Error al realizar el pedido');
+      console.error('Error al procesar el pedido:', error);
+      setMensaje('Error al procesar el pedido');
     }
   };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Finalizar Compra</h1>
+      <h1 className="text-3xl font-bold mb-4">Checkout</h1>
       {mensaje && <p className="mb-4 text-green-500">{mensaje}</p>}
-      <form onSubmit={manejarCheckout}>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Nombre Completo</label>
-          <input
-            type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
+      {carrito.length === 0 ? (
+        <p>El carrito está vacío. Añade productos antes de continuar con el pago.</p>
+      ) : (
+        <div>
+          <h2 className="text-xl font-bold mb-4">Productos en tu pedido:</h2>
+          <ul>
+            {carrito.map((producto) => (
+              <li key={producto._id} className="mb-2">
+                {producto.nombre} - ${producto.precio} x {producto.cantidad}
+              </li>
+            ))}
+          </ul>
+          <button onClick={procesarPedido} className="bg-blue-500 text-white px-4 py-2 rounded mt-4">
+            Procesar Pedido
+          </button>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Dirección de Envío</label>
-          <input
-            type="text"
-            value={direccion}
-            onChange={(e) => setDireccion(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Método de Pago</label>
-          <select
-            value={metodoPago}
-            onChange={(e) => setMetodoPago(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          >
-            <option value="">Seleccione un método de pago</option>
-            <option value="tarjeta">Tarjeta de Crédito/Débito</option>
-            <option value="paypal">PayPal</option>
-            <option value="webpay">WebPay</option>
-            <option value="mercadopago">Mercado Pago</option>
-          </select>
-        </div>
-        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Realizar Pedido
-        </button>
-      </form>
+      )}
     </div>
   );
 };

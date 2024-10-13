@@ -1,23 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../utils/axiosInterceptors';
 
 const OrderHistoryPage = () => {
   const [pedidos, setPedidos] = useState([]);
-  const [mensaje, setMensaje] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const obtenerPedidos = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/api/pedidos', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axiosInstance.get('/api/pedidos');
         setPedidos(response.data);
       } catch (error) {
-        console.error('Error al obtener los pedidos:', error);
-        setMensaje('Error al obtener el historial de pedidos');
+        console.error('Error al obtener el historial de pedidos:', error);
+        setError('Error al obtener el historial de pedidos. Intenta nuevamente.');
       }
     };
 
@@ -27,32 +22,29 @@ const OrderHistoryPage = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Historial de Pedidos</h1>
-      {mensaje && <p className="mb-4 text-red-500">{mensaje}</p>}
+      {error && <p className="mb-4 text-red-500">{error}</p>}
       {pedidos.length === 0 ? (
-        <p>No tienes pedidos realizados.</p>
+        <p>No has realizado pedidos aún.</p>
       ) : (
-        <div>
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2">ID del Pedido</th>
-                <th className="py-2">Fecha</th>
-                <th className="py-2">Total</th>
-                <th className="py-2">Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pedidos.map((pedido) => (
-                <tr key={pedido._id}>
-                  <td className="py-2 px-4 border-b">{pedido._id}</td>
-                  <td className="py-2 px-4 border-b">{new Date(pedido.fecha).toLocaleDateString()}</td>
-                  <td className="py-2 px-4 border-b">${pedido.total}</td>
-                  <td className="py-2 px-4 border-b">{pedido.estado}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ul>
+          {pedidos.map((pedido) => (
+            <li key={pedido._id} className="mb-4">
+              <div className="p-4 border rounded">
+                <h2 className="text-xl font-bold">Pedido #{pedido._id}</h2>
+                <p>Fecha: {new Date(pedido.fecha).toLocaleDateString()}</p>
+                <p>Estado: {pedido.estado}</p>
+                <h3 className="font-bold mt-2">Productos:</h3>
+                <ul>
+                  {pedido.productos.map((producto) => (
+                    <li key={producto.productoId}>
+                      {producto.nombre} - Cantidad: {producto.cantidad}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
