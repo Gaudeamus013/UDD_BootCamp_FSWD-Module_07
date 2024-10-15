@@ -1,0 +1,320 @@
+# backend/swagger/swagger.yaml
+openapi: 3.0.0
+info:
+  title: Cruz y Valencia Ecommerce API
+  description: API para la plataforma de comercio electrónico Cruz y Valencia
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /auth/register:
+    post:
+      summary: Registrar un nuevo usuario
+      tags:
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Usuario registrado exitosamente
+        '400':
+          description: Error de validación
+  /auth/login:
+    post:
+      summary: Iniciar sesión
+      tags:
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Inicio de sesión exitoso
+        '401':
+          description: Credenciales inválidas
+  /products:
+    get:
+      summary: Obtener todos los productos
+      tags:
+        - Productos
+      responses:
+        '200':
+          description: Lista de productos
+    post:
+      summary: Crear un nuevo producto
+      tags:
+        - Productos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+                description:
+                  type: string
+                stock:
+                  type: number
+      responses:
+        '201':
+          description: Producto creado exitosamente
+        '400':
+          description: Error de validación
+  /products/{id}:
+    get:
+      summary: Obtener un producto por ID
+      tags:
+        - Productos
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del producto
+      responses:
+        '200':
+          description: Detalles del producto
+        '404':
+          description: Producto no encontrado
+    put:
+      summary: Actualizar un producto
+      tags:
+        - Productos
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+                description:
+                  type: string
+                stock:
+                  type: number
+      responses:
+        '200':
+          description: Producto actualizado exitosamente
+        '400':
+          description: Error de validación
+        '404':
+          description: Producto no encontrado
+    delete:
+      summary: Eliminar un producto
+      tags:
+        - Productos
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del producto
+      responses:
+        '200':
+          description: Producto eliminado exitosamente
+        '404':
+          description: Producto no encontrado
+  /orders:
+    post:
+      summary: Crear un nuevo pedido
+      tags:
+        - Pedidos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderItems:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      qty:
+                        type: number
+                      price:
+                        type: number
+                      product:
+                        type: string
+                shippingAddress:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    city:
+                      type: string
+                    postalCode:
+                      type: string
+                    country:
+                      type: string
+                paymentMethod:
+                  type: string
+                itemsPrice:
+                  type: number
+                taxPrice:
+                  type: number
+                shippingPrice:
+                  type: number
+                totalPrice:
+                  type: number
+      responses:
+        '201':
+          description: Pedido creado exitosamente
+        '400':
+          description: Error de validación
+  /orders/{id}:
+    get:
+      summary: Obtener un pedido por ID
+      tags:
+        - Pedidos
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del pedido
+      responses:
+        '200':
+          description: Detalles del pedido
+        '404':
+          description: Pedido no encontrado
+    put:
+      summary: Actualizar estado del pedido
+      tags:
+        - Pedidos
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del pedido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isPaid:
+                  type: boolean
+                isDelivered:
+                  type: boolean
+      responses:
+        '200':
+          description: Estado del pedido actualizado exitosamente
+        '400':
+          description: Error de validación
+        '404':
+          description: Pedido no encontrado
+  /users:
+    get:
+      summary: Obtener todos los usuarios
+      tags:
+        - Usuarios
+      responses:
+        '200':
+          description: Lista de usuarios
+  /users/{id}:
+    get:
+      summary: Obtener un usuario por ID
+      tags:
+        - Usuarios
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del usuario
+      responses:
+        '200':
+          description: Detalles del usuario
+        '404':
+          description: Usuario no encontrado
+    put:
+      summary: Actualizar un usuario
+      tags:
+        - Usuarios
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+        '400':
+          description: Error de validación
+        '404':
+          description: Usuario no encontrado
+    delete:
+      summary: Eliminar un usuario
+      tags:
+        - Usuarios
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del usuario
+      responses:
+        '200':
+          description: Usuario eliminado exitosamente
+        '404':
+          description: Usuario no encontrado
