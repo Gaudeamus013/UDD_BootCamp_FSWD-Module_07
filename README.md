@@ -9,6 +9,9 @@ Pet Pixel es una aplicación web Fullstack de estilo SaaS inspirada en OnlyFans,
 - Carga y visualización de contenido exclusivo
 - Sistema de suscripciones y pagos
 - Panel de administración
+- Mensajería en tiempo real
+- Notificaciones
+- Análisis y estadísticas para creadores
 
 ## Tecnologías utilizadas
 
@@ -17,6 +20,8 @@ Pet Pixel es una aplicación web Fullstack de estilo SaaS inspirada en OnlyFans,
 - React Router Dom
 - Tailwind CSS
 - Axios
+- Socket.io-client
+- Chart.js y react-chartjs-2
 
 ### Backend
 - Node.js
@@ -25,27 +30,71 @@ Pet Pixel es una aplicación web Fullstack de estilo SaaS inspirada en OnlyFans,
 - JSON Web Tokens (JWT)
 - Bcrypt.js
 - Stripe (para procesamiento de pagos)
+- Socket.io
+- Cloudinary (para almacenamiento de imágenes y videos)
 
 ## Estructura del proyecto
 
 ```
 pet-pixel/
-├── client/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── index.html
-│   └── package.json
+├── src/
+│   ├── components/
+│   │   ├── ContentViewer.jsx
+│   │   ├── ImageUpload.jsx
+│   │   ├── Mensajeria.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── NotificationIndicator.jsx
+│   │   ├── Notificaciones.jsx
+│   │   └── VideoUpload.jsx
+│   ├── context/
+│   │   ├── AuthContext.jsx
+│   │   └── SocketContext.jsx
+│   ├── pages/
+│   │   ├── Admin.jsx
+│   │   ├── Checkout.jsx
+│   │   ├── ContentPage.jsx
+│   │   ├── CreadorDashboard.jsx
+│   │   ├── EventoProximo.jsx
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   ├── Profile.jsx
+│   │   └── SignUp.jsx
+│   ├── services/
+│   │   └── api.js
+│   ├── utils/
+│   │   └── validations.js
+│   ├── App.jsx
+│   └── main.jsx
 ├── server/
-│   ├── models/
-│   ├── routes/
+│   ├── config/
+│   │   └── cloudinary.js
 │   ├── middleware/
-│   ├── index.js
-│   └── package.json
+│   │   ├── admin.js
+│   │   ├── auth.js
+│   │   └── geoblock.js
+│   ├── models/
+│   │   ├── Contenido.js
+│   │   ├── Mensaje.js
+│   │   ├── Notificacion.js
+│   │   ├── Pago.js
+│   │   ├── Suscripcion.js
+│   │   └── Usuario.js
+│   ├── routes/
+│   │   ├── admin.js
+│   │   ├── analisis.js
+│   │   ├── contenido.js
+│   │   ├── mensajes.js
+│   │   ├── notificaciones.js
+│   │   ├── pagos.js
+│   │   ├── suscripciones.js
+│   │   └── usuarios.js
+│   ├── utils/
+│   │   └── publicacionProgramada.js
+│   └── index.js
 ├── .env
-└── README.md
+├── package.json
+├── README.md
+└── vite.config.js
 ```
 
 ## Configuración y ejecución
@@ -56,39 +105,29 @@ pet-pixel/
    cd pet-pixel
    ```
 
-2. Instala las dependencias del servidor:
+2. Instala las dependencias:
    ```
-   cd server
    npm install
    ```
 
-3. Instala las dependencias del cliente:
-   ```
-   cd ../client
-   npm install
-   ```
-
-4. Configura las variables de entorno:
+3. Configura las variables de entorno:
    Crea un archivo `.env` en la raíz del proyecto y añade las siguientes variables:
    ```
-   MONGODB_URI=tu_uri_de_mongodb
-   JWT_SECRET=tu_secreto_jwt
-   STRIPE_SECRET_KEY=tu_clave_secreta_de_stripe
+   VITE_API_URL=http://localhost:5000/api
+   MONGODB_URI=mongodb+srv://gaudeamus013:F3n1x013@your_cluster.mongodb.net/pet_pixel?retryWrites=true&w=majority
+   JWT_SECRET=Machapalapachala
+   STRIPE_SECRET_KEY=your_stripe_secret_key
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
    ```
 
-5. Inicia el servidor:
+4. Inicia el servidor de desarrollo y el backend:
    ```
-   cd ../server
-   npm start
-   ```
-
-6. Inicia el cliente:
-   ```
-   cd ../client
-   npm run dev
+   npm run dev:all
    ```
 
-7. Abre tu navegador y visita `http://localhost:5173` para ver la aplicación en funcionamiento.
+5. Abre tu navegador y visita `http://localhost:3000` para ver la aplicación en funcionamiento.
 
 ## Contribuciones
 
