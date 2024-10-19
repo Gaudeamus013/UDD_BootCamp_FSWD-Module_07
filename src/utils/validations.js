@@ -4,7 +4,6 @@ export const validateEmail = (email) => {
 };
 
 export const validatePassword = (password) => {
-  // Mínimo 8 caracteres, al menos una letra mayúscula, una minúscula, un número y un carácter especial
   const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return re.test(password);
 };

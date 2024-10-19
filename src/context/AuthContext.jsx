@@ -8,32 +8,38 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      fetchUser();
-    } else {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        try {
+          const response = await api.get('/usuarios/perfil');
+          setUser(response.data);
+        } catch (error) {
+          console.error('Error fetching user:', error);
+          localStorage.removeItem('token');
+          delete api.defaults.headers.common['Authorization'];
+        }
+      }
       setLoading(false);
-    }
+    };
+
+    fetchUser();
   }, []);
 
-  const fetchUser = async () => {
-    try {
-      const response = await api.get('/usuarios/perfil');
-      setUser(response.data);
-    } catch (error) {
-      console.error('Error fetching user:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const login = async (credentials) => {
-    const response = await api.post('/usuarios/login', credentials);
-    const { token } = response.data;
-    localStorage.setItem('token', token);
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    await fetchUser();
+    try {
+      const response = await api.post('/usuarios/login', credentials);
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const userResponse = await api.get('/usuarios/perfil');
+      setUser(userResponse.data);
+      return true;
+    } catch (error) {
+      console.error('Error during login:', error);
+      return false;
+    }
   };
 
   const logout = () => {

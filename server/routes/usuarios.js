@@ -1,33 +1,32 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const Usuario = require('../models/Usuario');
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
-// Registro de usuario
-router.post('/registro', async (req, res) => {
+// Login de usuario
+router.post('/login', async (req, res) => {
   try {
-    const { nombre, email, password, tipoUsuario } = req.body;
-    let usuario = await Usuario.findOne({ email });
-    if (usuario) {
-      return res.status(400).json({ msg: 'El usuario ya existe' });
+    const { nombreUsuario, password } = req.body;
+    let usuario = await Usuario.findOne({ nombreUsuario });
+    if (!usuario) {
+      return res.status(400).json({ message: 'Credenciales inválidas' });
     }
     
-    // Evitar que se registren usuarios como administradores
-    const userType = tipoUsuario === 'creador' ? 'creador' : 'suscriptor';
-    
-    usuario = new Usuario({
-      nombre,
-      email,
-      password,
-      tipoUsuario: userType
-    });
-    await usuario.save();
+    const isMatch = await bcrypt.compare(password, usuario.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Credenciales inválidas' });
+    }
+
     const payload = {
       usuario: {
-        id: usuario.id
+        id: usuario.id,
+        tipoUsuario: usuario.tipoUsuario
       }
     };
+
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -43,6 +42,17 @@ router.post('/registro', async (req, res) => {
   }
 });
 
-// ... (resto del código sin cambios)
+// Obtener perfil de usuario
+router.get('/perfil', auth, async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.usuario.id).select('-password');
+    res.json(usuario);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
+// ... (resto del código)
 
 module.exports = router;

@@ -116,10 +116,10 @@ pet-pixel/
    VITE_API_URL=http://localhost:5000/api
    MONGODB_URI=mongodb+srv://gaudeamus013:F3n1x013@your_cluster.mongodb.net/pet_pixel?retryWrites=true&w=majority
    JWT_SECRET=Machapalapachala
-   STRIPE_SECRET_KEY=your_stripe_secret_key
-   CLOUDINARY_CLOUD_NAME=your_cloud_name
-   CLOUDINARY_API_KEY=your_api_key
-   CLOUDINARY_API_SECRET=your_api_secret
+   STRIPE_SECRET_KEY=tu_clave_secreta_de_stripe
+   CLOUDINARY_CLOUD_NAME=tu_cloud_name
+   CLOUDINARY_API_KEY=tu_api_key
+   CLOUDINARY_API_SECRET=tu_api_secret
    ```
 
 4. Inicia el servidor de desarrollo y el backend:

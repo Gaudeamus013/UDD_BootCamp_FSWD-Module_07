@@ -11,6 +11,4 @@ export const getProfile = () => api.get('/usuarios/perfil');
 export const createContent = (contentData) => api.post('/contenido', contentData);
 export const getContent = () => api.get('/contenido');
 
-// Añade más funciones según sea necesario
-
 export default api;

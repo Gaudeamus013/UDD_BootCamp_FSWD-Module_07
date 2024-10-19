@@ -1,8 +1,17 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const usuarioSchema = new mongoose.Schema({
+  nombreUsuario: {
+    type: String,
+    required: true,
+    unique: true
+  },
   nombre: {
+    type: String,
+    required: true
+  },
+  apellido: {
     type: String,
     required: true
   },
@@ -17,7 +26,7 @@ const usuarioSchema = new mongoose.Schema({
   },
   tipoUsuario: {
     type: String,
-    enum: ['suscriptor', 'creador', 'admin'],
+    enum: ['suscriptor', 'creador', 'admin', 'superadmin'],
     default: 'suscriptor'
   },
   suscripciones: [{
@@ -40,4 +49,6 @@ usuarioSchema.methods.compararPassword = async function(password) {
   return await bcrypt.compare(password, this.password);
 };
 
-module.exports = mongoose.model('Usuario', usuarioSchema);
+const Usuario = mongoose.model('Usuario', usuarioSchema);
+
+export default Usuario;
